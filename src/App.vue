@@ -1,16 +1,44 @@
 <template>
     <div id="app">
-        <h1>Lyric Cleaner</h1>
+        <b-navbar toggleable="md" type="dark" variant="dark">
+            <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
+            <b-navbar-brand href="#">Lyric Cleaner</b-navbar-brand>
 
-        <label>Source</label>
-        <textarea v-model="source" rows="20"></textarea>
-        <label>Output</label>
-        <textarea :value="output" rows="20" disabled="true"></textarea>
+            <b-collapse is-nav id="nav_collapse">
+                <!-- Right aligned nav items -->
+                <b-navbar-nav class="ml-auto">
+                    <b-btn v-b-modal.controls>Controls</b-btn>
+                </b-navbar-nav>
 
+            </b-collapse>
+        </b-navbar>
+
+        <b-container class="bv-row">
+            <b-row>
+                <b-col>
+                    <label>Source</label>
+                    <textarea v-model="source" rows="32"></textarea>
+                </b-col>
+                <b-col>
+                    <label>Output</label>
+                    <textarea :value="output" rows="32" disabled="true"></textarea>
+                </b-col>
+            </b-row>
+        </b-container>
+
+        <l-c-footer></l-c-footer>
+
+        <b-modal id="controls" size="lg" centered title="Controls">
+            <l-c-controls></l-c-controls>
+        </b-modal>
     </div>
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
+  import LCControls from '@/components/Controls'
+  import LCFooter from '@/components/Footer'
+
   export default {
     name: 'App',
     data () {
@@ -21,62 +49,91 @@
     computed: {
       output () {
         let source = this.source
-        source = this.stripChordPro(source)
-        source = this.trimLines(source)
-        source = this.condenseMultipleSpaces(source)
-        source = this.condenseMultipleLineBreaks(source)
-        source = this.removeHyphens(source)
-        source = this.removeTerminalPunctuation(source)
-        source = this.lowerCaseLine(source)
-        source = this.capitalizeFirstInLine(source)
-        source = this.capitalizeNames(source)
+        if (this.stripChords) {
+          source = this.stripChordProAction(source)
+        }
+        if (this.trimLines) {
+          source = this.trimLinesAction(source)
+        }
+        if (this.condenseMultipleSpaces) {
+          source = this.condenseMultipleSpacesAction(source)
+        }
+
+        source = this.condenseMultipleLineBreaksAction(source)
+
+        if (this.removeHyphens) {
+          source = this.removeHyphensAction(source)
+        }
+        if (this.removeTerminalPunctuation) {
+          source = this.removeTerminalPunctuationAction(source)
+        }
+        if (this.lowerCaseLine) {
+          source = this.lowerCaseLineAction(source)
+        }
+        if (this.capitalizeFirstInLine) {
+          source = this.capitalizeFirstInLineAction(source)
+        }
+        if (this.capitalizeNames) {
+          source = this.capitalizeNamesAction(source)
+        }
         let array = this.textToArray(source)
         return this.arrayToText(array)
       },
+      ...mapGetters('uicontrol', [
+        'stripChords',
+        'trimLines',
+        'condenseMultipleSpaces',
+        'removeHyphens',
+        'removeTerminalPunctuation',
+        'lowerCaseLine',
+        'capitalizeFirstInLine',
+        'capitalizeNames',
+        'capitalizeNamesValues',
+      ]),
     },
     methods: {
-      trimLines (text) {
+      trimLinesAction (text) {
         let regexString = '^[ \t]*(.+?)[ \t]*$'
         let regex = new RegExp(regexString, 'gim')
         return text.replace(regex, '$1')
       },
-      condenseMultipleSpaces (text) {
+      condenseMultipleSpacesAction (text) {
         let regexString = '[ \t]{1,}'
         let regex = new RegExp(regexString, 'gim')
         return text.replace(regex, ' ')
       },
-      condenseMultipleLineBreaks (text) {
+      condenseMultipleLineBreaksAction (text) {
         let regexString = '\n{2,}'
         let regex = new RegExp(regexString, 'gim')
         return text.replace(regex, '\n\n')
       },
-      lowerCaseLine (text) {
+      lowerCaseLineAction (text) {
         let regexString = '^(.)(.*)$'
         let regex = new RegExp(regexString, 'gim')
         return text.replace(regex, (match, p1, p2, offset, string) => p1 + p2.toLowerCase())
       },
-      upperCaseLine (text) {
+      upperCaseLineAction (text) {
         let regexString = '^(.*)$'
         let regex = new RegExp(regexString, 'gim')
         return text.replace(regex, (match, p1, offset, string) => p1.toUpperCase())
       },
-      capitalizeFirstInLine (text) {
+      capitalizeFirstInLineAction (text) {
         let regexString = '^(.)'
         let regex = new RegExp(regexString, 'gim')
         return text.replace(regex, (match, p1, offset, string) => this.toTitleCase(p1))
       },
-      removeHyphens (text) {
+      removeHyphensAction (text) {
         let regexString = ' *\\- *'
         let regex = new RegExp(regexString, 'gim')
         return text.replace(regex, '')
       },
-      removeTerminalPunctuation (text) {
+      removeTerminalPunctuationAction (text) {
         let regexString = '[,.;]+$'
         let regex = new RegExp(regexString, 'gim')
         return text.replace(regex, '')
       },
-      stripChordPro (text) {
-        let chordMatch = '[A-G](#|b|m|maj|sus)*\\d?'
+      stripChordProAction (text) {
+        let chordMatch = '[A-G](#|b|m|maj|sus)*\\d?(\\/[A-G](#|b)*)?'
         let regexString = '(?<=(?:^|[ \t]))' + chordMatch + '(?=(?:[ \t]|$))'
         let regex = new RegExp(regexString, 'gim')
         text = text.replace(regex, '%%')
@@ -93,8 +150,9 @@
         regex = new RegExp(regexString, 'gim')
         return text.replace(regex, '')
       },
-      capitalizeNames (text) {
-        let words = ['Du', 'Ditt', 'Din', 'Deg', 'Han', 'Ham', 'Herre', 'Gud', 'Jesus', 'Ånd']
+      capitalizeNamesAction (text) {
+        // let words = ['Du', 'Ditt', 'Din', 'Deg', 'Han', 'Ham', 'Herre', 'Gud', 'Jesus', 'Ånd']
+        let words = this.$store.state.uicontrol.capitalizeNamesValues
         let regexString = '(?<=(?:^|[ ,.;!?]))(' + words.join('|') + ')(?=(?:[ ,.;!?]|$))'
         // console.log(regexString)
         let regex = new RegExp(regexString, 'gim')
@@ -162,7 +220,7 @@
           }
           if (typeof block.lines !== 'undefined') {
             let blockText = block.lines.join('\n') + '\n\n'
-            blockText = this.upperCaseLine(blockText)
+            // blockText = this.upperCaseLineAction(blockText)
             text += blockText
           }
         }
@@ -170,16 +228,24 @@
         return text.trim()
       },
     },
-    components: {},
+    components: {
+      LCControls,
+      LCFooter,
+    },
   }
 </script>
 
 <style>
+    .bv-row {
+        padding: 1rem 0;
+    }
     label {
         display: block;
+        font-weight: bold;
+        font-size: 120%;
     }
 
     textarea {
-        width: 70%;
+        width: 100%;
     }
 </style>
