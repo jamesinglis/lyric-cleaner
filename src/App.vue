@@ -27,6 +27,7 @@
         source = this.condenseMultipleLineBreaks(source)
         source = this.removeHyphens(source)
         source = this.removeTerminalPunctuation(source)
+        source = this.lowerCaseLine(source)
         source = this.capitalizeFirstInLine(source)
         source = this.capitalizeNames(source)
         let array = this.textToArray(source)
@@ -48,6 +49,16 @@
         let regexString = '\n{2,}'
         let regex = new RegExp(regexString, 'gim')
         return text.replace(regex, '\n\n')
+      },
+      lowerCaseLine (text) {
+        let regexString = '^(.)(.*)$'
+        let regex = new RegExp(regexString, 'gim')
+        return text.replace(regex, (match, p1, p2, offset, string) => p1 + p2.toLowerCase())
+      },
+      upperCaseLine (text) {
+        let regexString = '^(.*)$'
+        let regex = new RegExp(regexString, 'gim')
+        return text.replace(regex, (match, p1, offset, string) => p1.toUpperCase())
       },
       capitalizeFirstInLine (text) {
         let regexString = '^(.)'
@@ -83,7 +94,7 @@
         return text.replace(regex, '')
       },
       capitalizeNames (text) {
-        let words = ['Du', 'Ditt', 'Din', 'Deg', 'Han', 'Ham']
+        let words = ['Du', 'Ditt', 'Din', 'Deg', 'Han', 'Ham', 'Herre', 'Gud', 'Jesus', 'Ånd']
         let regexString = '(?<=(?:^|[ ,.;!?]))(' + words.join('|') + ')(?=(?:[ ,.;!?]|$))'
         // console.log(regexString)
         let regex = new RegExp(regexString, 'gim')
@@ -150,7 +161,9 @@
             text += block.label + '\n'
           }
           if (typeof block.lines !== 'undefined') {
-            text += block.lines.join('\n') + '\n\n'
+            let blockText = block.lines.join('\n') + '\n\n'
+            blockText = this.upperCaseLine(blockText)
+            text += blockText
           }
         }
 
@@ -162,15 +175,6 @@
 </script>
 
 <style>
-    #app {
-        font-family: 'Avenir', Helvetica, Arial, sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-align: center;
-        color: #2c3e50;
-        margin-top: 60px;
-    }
-
     label {
         display: block;
     }
