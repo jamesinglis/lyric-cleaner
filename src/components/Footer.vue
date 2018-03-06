@@ -2,7 +2,7 @@
     <footer class="footer">
         <div class="container">
             <span class="text-muted">Created by <a href="http://jamesinglis.no">James Inglis</a></span>
-            <span class="text-muted float-right">Source code available on <a href="#">GitHub</a></span>
+            <span class="text-muted float-right">Source code available on <a href="https://github.com/jamesinglis/lyric-cleaner">GitHub</a></span>
         </div>
     </footer>
 </template>

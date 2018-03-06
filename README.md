@@ -1,6 +1,10 @@
-# lyric-cleaner
+# Lyric Cleaner
 
-> A Vue.js project
+> Built on Vue.js
+
+Lyric Cleaner is an in-browser solution for cleaning up lyrics from various sources, written with worship projection software in mind.
+
+Lyric Cleaner is hosted at [https://lyric-cleaner.herokuapp.com].
 
 ## Build Setup
 
@@ -17,5 +21,3 @@ npm run build
 # build for production and view the bundle analyzer report
 npm run build --report
 ```
-
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
