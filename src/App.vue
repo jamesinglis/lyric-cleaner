@@ -134,9 +134,9 @@
       },
       stripChordProAction (text) {
         let chordMatch = '[A-G](#|b|m|maj|sus)*\\d?(\\/[A-G](#|b)*)?'
-        let regexString = '(?<=(?:^|[ \t]))' + chordMatch + '(?=(?:[ \t]|$))'
+        let regexString = '(^|[ \\t])(' + chordMatch + ')([ \\t]|$)'
         let regex = new RegExp(regexString, 'gim')
-        text = text.replace(regex, '%%')
+        text = text.replace(regex, '')
 
         regexString = '\\[' + chordMatch + '\\]'
         regex = new RegExp(regexString, 'gim')
@@ -153,10 +153,10 @@
       capitalizeNamesAction (text) {
         // let words = ['Du', 'Ditt', 'Din', 'Deg', 'Han', 'Ham', 'Herre', 'Gud', 'Jesus', 'Ånd']
         let words = this.$store.state.uicontrol.capitalizeNamesValues
-        let regexString = '(?<=(?:^|[ ,.;!?]))(' + words.join('|') + ')(?=(?:[ ,.;!?]|$))'
+        let regexString = '(^|[ ,.;!?])(' + words.join('|') + ')([ ,.;!?]|$)'
         // console.log(regexString)
         let regex = new RegExp(regexString, 'gim')
-        return text.replace(regex, (match, p1, p2, p3, offset, string) => this.toTitleCase(p1))
+        return text.replace(regex, (match, p1, p2, p3, offset, string) => p1 + this.toTitleCase(p2) + p3)
       },
       toTitleCase (text) {
         return text.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
@@ -239,6 +239,7 @@
     .bv-row {
         padding: 1rem 0;
     }
+
     label {
         display: block;
         font-weight: bold;
