@@ -106,7 +106,7 @@
                                  @change="pushControlFormToState"></b-form-checkbox>
             </b-col>
             <b-col cols="6">
-                <b-form-select :value="capitalizeNamesPresetSelection"
+                <b-form-select :value="capitalizeNamesPresetDefault"
                                :options="capitalizeNamesPresetOptions"
                                @change="selectCapitalizeNamesPreset"
                 ></b-form-select>
@@ -143,7 +143,6 @@
         capitalizeNames: stateValues.capitalizeNames,
         capitalizeNamesPresets: stateValues.capitalizeNamesPresets,
         capitalizeNamesPresetDefault: stateValues.capitalizeNamesPresetDefault,
-        capitalizeNamesPresetSelection: stateValues.capitalizeNamesPresetDefault,
         capitalizeNamesValues: stateValues.capitalizeNamesValues,
         capitalizeNamesValuesString: stateValues.capitalizeNamesValuesString,
         suppressDuplicateSections: stateValues.suppressDuplicateSections,
@@ -184,6 +183,7 @@
     },
     methods: {
       selectCapitalizeNamesPreset (value) {
+        this.capitalizeNamesPresetDefault = value
         this.capitalizeNamesValuesString = this.capitalizeNamesPresets[value]['options'].join(',')
         this.capitalizeNamesValues = this.capitalizeNamesPresets[value]['options']
         this.$store.dispatch('uicontrol/pushControlsToStore', this.controlForm)
@@ -202,10 +202,10 @@
       },
     },
     mounted () {
-      if (this.capitalizeNamesPresetSelection !== null) {
-        this.capitalizeNamesValuesString = this.capitalizeNamesPresets[this.capitalizeNamesPresetSelection]['options'].join(
+      if (this.capitalizeNamesPresetDefault !== null) {
+        this.capitalizeNamesValuesString = this.capitalizeNamesPresets[this.capitalizeNamesPresetDefault]['options'].join(
           ',')
-        this.capitalizeNamesValues = this.capitalizeNamesPresets[this.capitalizeNamesPresetSelection]['options']
+        this.capitalizeNamesValues = this.capitalizeNamesPresets[this.capitalizeNamesPresetDefault]['options']
         this.$store.dispatch('uicontrol/pushControlsToStore', this.controlForm)
       }
     },

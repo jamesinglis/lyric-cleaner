@@ -2,6 +2,7 @@ import * as types from '../mutation-types'
 
 // state
 export const state = {
+  controlsUpdated: false,
   stripChords: true,
   removeHyphens: true,
   removeParentheses: true,
@@ -63,6 +64,7 @@ export const state = {
 
 // getters
 export const getters = {
+  controlsUpdated: state => state.controlsUpdated,
   stripChords: state => state.stripChords,
   removeHyphens: state => state.removeHyphens,
   removeParentheses: state => state.removeParentheses,
@@ -93,6 +95,7 @@ export const mutations = {
         state[key] = controlObject[key]
       }
     }
+    state.controlsUpdated = true
   },
 }
 

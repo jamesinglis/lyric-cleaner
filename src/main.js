@@ -9,6 +9,7 @@ import App from '@/App'
 import store from './store'
 
 Vue.use(BootstrapVue)
+
 Vue.use(VueAnalytics, {
   id: 'UA-115384966-1',
   checkDuplicatedScript: true,
