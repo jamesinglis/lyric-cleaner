@@ -56,9 +56,33 @@
     computed: {
       output () {
         let source = this.source
+
+        // Run this the first time
+        if (this.trimLines) {
+          source = this.trimLinesAction(source)
+        }
+        if (this.condenseMultipleSpaces) {
+          source = this.condenseMultipleSpacesAction(source)
+        }
+
+        // Run removal filters first
         if (this.stripChords) {
           source = this.stripChordProAction(source)
         }
+        if (this.removeHyphens) {
+          source = this.removeHyphensAction(source)
+        }
+        if (this.removeParentheses) {
+          source = this.removeParenthesesAction(source)
+        }
+        if (this.removeMultipliers) {
+          source = this.removeMultipliersAction(source)
+        }
+        if (this.removeTerminalPunctuation) {
+          source = this.removeTerminalPunctuationAction(source)
+        }
+
+        // Run a second time in case removal filters left artifacts
         if (this.trimLines) {
           source = this.trimLinesAction(source)
         }
@@ -70,20 +94,9 @@
           source = this.condenseMultipleLineBreaksAction(source)
         }
 
+        // Run the mutation filters
         if (this.straightenQuotes) {
           source = this.straightenQuotesAction(source)
-        }
-        if (this.removeHyphens) {
-          source = this.removeHyphensAction(source)
-        }
-        if (this.removeParentheses) {
-          source = this.removeParenthesesAction(source)
-        }
-        if (this.removeTerminalPunctuation) {
-          source = this.removeTerminalPunctuationAction(source)
-        }
-        if (this.removeMultipliers) {
-          source = this.removeMultipliersAction(source)
         }
         if (this.lowerCaseLine) {
           source = this.lowerCaseLineAction(source)
@@ -94,6 +107,7 @@
         if (this.capitalizeNames) {
           source = this.capitalizeNamesAction(source)
         }
+
         let array = this.textToArray(source)
         return array
       },
