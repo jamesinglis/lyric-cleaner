@@ -50,7 +50,7 @@
     data () {
       return {
         source: '',
-        debug: true,
+        debug: false,
       }
     },
     computed: {
