@@ -17,11 +17,17 @@
             <b-row>
                 <b-col>
                     <label>Source</label>
-                    <textarea v-model="source" rows="32"></textarea>
+                    <textarea v-model="source" rows="24"></textarea>
                 </b-col>
                 <b-col>
                     <label>Output</label>
-                    <textarea :value="output" rows="32" disabled="true"></textarea>
+                    <textarea :value="outputDisplay" rows="24" readonly></textarea>
+                </b-col>
+            </b-row>
+            <b-row v-if="debug">
+                <b-col>
+                    <label>Debug</label>
+                    <textarea :value="outputDebug" rows="12" disabled="true"></textarea>
                 </b-col>
             </b-row>
         </b-container>
@@ -44,6 +50,7 @@
     data () {
       return {
         source: '',
+        debug: true,
       }
     },
     computed: {
@@ -59,8 +66,13 @@
           source = this.condenseMultipleSpacesAction(source)
         }
 
-        source = this.condenseMultipleLineBreaksAction(source)
+        if (this.checkForSectionHeadings(source)) {
+          source = this.condenseMultipleLineBreaksAction(source)
+        }
 
+        if (this.straightenQuotes) {
+          source = this.straightenQuotesAction(source)
+        }
         if (this.removeHyphens) {
           source = this.removeHyphensAction(source)
         }
@@ -77,12 +89,19 @@
           source = this.capitalizeNamesAction(source)
         }
         let array = this.textToArray(source)
-        return this.arrayToText(array)
+        return array
+      },
+      outputDisplay () {
+        return this.arrayToText(this.output)
+      },
+      outputDebug () {
+        return JSON.stringify(this.output)
       },
       ...mapGetters('uicontrol', [
         'stripChords',
         'trimLines',
         'condenseMultipleSpaces',
+        'straightenQuotes',
         'removeHyphens',
         'removeTerminalPunctuation',
         'lowerCaseLine',
@@ -107,6 +126,12 @@
         let regex = new RegExp(regexString, 'gim')
         return text.replace(regex, '\n\n')
       },
+      checkForSectionHeadings (text) {
+        let songSections = ['Verse ?\\d?', 'Chorus ?\\d?', 'Bridge ?\\d?', 'Pre-Chorus ?\\d?', 'Tag ?\\d?']
+        let regexString = '^(' + songSections.join('|') + ')$'
+        let regex = new RegExp(regexString, 'gim')
+        return regex.test(text)
+      },
       lowerCaseLineAction (text) {
         let regexString = '^(.)(.*)$'
         let regex = new RegExp(regexString, 'gim')
@@ -122,6 +147,9 @@
         let regex = new RegExp(regexString, 'gim')
         return text.replace(regex, (match, p1, offset, string) => this.toTitleCase(p1))
       },
+      straightenQuotesAction (text) {
+        return text.replace(/[\u2018\u2019]/g, '\'').replace(/[\u201C\u201D]/g, '"')
+      },
       removeHyphensAction (text) {
         let regexString = ' *\\- *'
         let regex = new RegExp(regexString, 'gim')
@@ -135,19 +163,19 @@
       stripChordProAction (text) {
         let chordMatch = '[A-G](#|b|m|maj|sus)*\\d?(\\/[A-G](#|b)*)?'
         let regexString = '(^|[ \\t])(' + chordMatch + ')([ \\t]|$)'
-        let regex = new RegExp(regexString, 'gim')
+        let regex = new RegExp(regexString, 'gm')
         text = text.replace(regex, '')
 
         regexString = '\\[' + chordMatch + '\\]'
-        regex = new RegExp(regexString, 'gim')
+        regex = new RegExp(regexString, 'gm')
         text = text.replace(regex, '%%')
 
         regexString = '^( |%%)+$\\n'
-        regex = new RegExp(regexString, 'gim')
-        text = text.replace(regex, '')
+        regex = new RegExp(regexString, 'gm')
+        text = text.replace(regex, '%%')
 
         regexString = '%% ?'
-        regex = new RegExp(regexString, 'gim')
+        regex = new RegExp(regexString, 'gm')
         return text.replace(regex, '')
       },
       capitalizeNamesAction (text) {
@@ -163,13 +191,13 @@
       },
       textToArray (text) {
         let blockArray = text.split('\n\n')
-        let outputArray1 = []
-        let outputArray2 = []
-        let outputArray3 = []
-        let outputArray3Temp = []
+        let outputArray = []
+        let outputArrayTemp = []
         let songSections = ['Verse ?\\d?', 'Chorus ?\\d?', 'Bridge ?\\d?', 'Pre-Chorus ?\\d?', 'Tag ?\\d?']
         let regexString = '^(' + songSections.join('|') + ')$'
         let regex = new RegExp(regexString, 'i')
+        let i = 0
+        let counter = 1
 
         for (var block of blockArray) {
           if (block === '') continue
@@ -178,43 +206,52 @@
 
           if (regex.test(blockSplit[0])) {
             blockObject.label = blockSplit.shift()
+          } else if (this.$store.state.uicontrol.labelUnlabeledSections) {
+            blockObject.label = 'Verse ' + counter++
           }
 
-          blockObject.lines = blockSplit
-          outputArray1.push(blockObject)
+          blockObject.lines = blockSplit.splice(0)
+          outputArray.push(blockObject)
         }
 
+        // console.log(outputArray)
+
+        blockArray = outputArray.slice(0)
+        outputArray = []
+
         // This loop condenses down multiple "sections" into named sections
-        if (outputArray1.length > 0) {
-          outputArray2.push(outputArray1[0])
+        if (blockArray.length > 0 && this.$store.state.uicontrol.mergeUnlabeledSections) {
+          outputArray.push(blockArray[0])
           let lastArrayKey = 0
 
-          for (var i = 0; i < outputArray1.length; i++) {
-            if (i !== 0 && outputArray1[i].label === '') {
-              lastArrayKey = outputArray2.length - 1
-              outputArray2[lastArrayKey].lines = outputArray2[lastArrayKey].lines.concat(outputArray1[i].lines)
+          for (i = 0; i < blockArray.length; i++) {
+            if (i !== 0 && blockArray[i].label === '') {
+              lastArrayKey = outputArray.length - 1
+              outputArray[lastArrayKey].lines = blockArray[lastArrayKey].lines.concat(blockArray[i].lines)
             } else if (i !== 0) {
-              outputArray2.push(outputArray1[i])
+              outputArray.push(blockArray[i])
             }
           }
+
+          blockArray = outputArray.slice(0)
+          outputArray = []
         }
 
         // This loop checks there are no duplicate sections
-        if (outputArray2.length > 0) {
-          for (i = 0; i < outputArray2.length; i++) {
-            if (outputArray3Temp.indexOf(JSON.stringify(outputArray2[i])) === -1) {
-              outputArray3.push(outputArray2[i])
+        if (blockArray.length > 0) {
+          for (i = 0; i < blockArray.length; i++) {
+            if (outputArrayTemp.indexOf(JSON.stringify(blockArray[i])) === -1) {
+              outputArray.push(blockArray[i])
             }
-            outputArray3Temp.push(JSON.stringify(outputArray2[i]))
+            outputArrayTemp.push(JSON.stringify(blockArray[i]))
           }
         }
 
-        return outputArray3
+        return outputArray
       },
       arrayToText (array) {
         let text = ''
         for (var block of array) {
-          console.log(block)
           if (block.label !== '') {
             text += block.label + '\n'
           }
