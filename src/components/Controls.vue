@@ -77,12 +77,24 @@
                                  v-model="lowerCaseLine"
                                  @change="pushControlFormToState"></b-form-checkbox>
             </b-col>
+            <b-col cols="5">Suppress Duplicate Sections</b-col>
+            <b-col cols="1">
+                <b-form-checkbox id="suppressDuplicateSections"
+                                 v-model="suppressDuplicateSections"
+                                 @change="pushControlFormToState"></b-form-checkbox>
+            </b-col>
         </b-row>
         <b-row>
             <b-col cols="5">Capitalize First Letter in Line</b-col>
             <b-col cols="1">
                 <b-form-checkbox id="capitalizeFirstInLine"
                                  v-model="capitalizeFirstInLine"
+                                 @change="pushControlFormToState"></b-form-checkbox>
+            </b-col>
+            <b-col cols="5">Capitalize All</b-col>
+            <b-col cols="1">
+                <b-form-checkbox id="capitalizeAll"
+                                 v-model="capitalizeAll"
                                  @change="pushControlFormToState"></b-form-checkbox>
             </b-col>
         </b-row>
@@ -124,6 +136,8 @@
         capitalizeNames: this.$store.state.uicontrol.capitalizeNames,
         capitalizeNamesValues: this.$store.state.uicontrol.capitalizeNamesValues,
         capitalizeNamesValuesString: this.$store.state.uicontrol.capitalizeNamesValues.join(','),
+        suppressDuplicateSections: this.$store.state.uicontrol.suppressDuplicateSections,
+        capitalizeAll: this.$store.state.uicontrol.capitalizeAll,
       }
     },
     computed: {
@@ -143,6 +157,8 @@
           capitalizeFirstInLine: this.capitalizeFirstInLine,
           capitalizeNames: this.capitalizeNames,
           capitalizeNamesValues: this.capitalizeNamesValues,
+          suppressDuplicateSections: this.suppressDuplicateSections,
+          capitalizeAll: this.capitalizeAll,
         }
       },
     },

@@ -270,7 +270,7 @@
         }
 
         // This loop checks there are no duplicate sections
-        if (blockArray.length > 0) {
+        if (blockArray.length > 0 && this.$store.state.uicontrol.suppressDuplicateSections) {
           for (i = 0; i < blockArray.length; i++) {
             if (outputArrayTemp.indexOf(JSON.stringify(blockArray[i])) === -1) {
               outputArray.push(blockArray[i])
@@ -289,7 +289,9 @@
           }
           if (typeof block.lines !== 'undefined') {
             let blockText = block.lines.join('\n') + '\n\n'
-            // blockText = this.upperCaseLineAction(blockText)
+            if (this.$store.state.uicontrol.capitalizeAll) {
+              blockText = this.upperCaseLineAction(blockText)
+            }
             text += blockText
           }
         }
