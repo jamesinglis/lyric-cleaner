@@ -7,7 +7,7 @@
             <b-collapse is-nav id="nav_collapse">
                 <!-- Right aligned nav items -->
                 <b-navbar-nav class="ml-auto">
-                    <b-btn v-b-modal.controls>Controls</b-btn>
+                    <b-btn v-b-modal.controls variant="danger">Controls</b-btn>
                 </b-navbar-nav>
 
             </b-collapse>
@@ -34,14 +34,16 @@
 
         <l-c-footer></l-c-footer>
 
-        <b-modal id="controls" size="lg" centered title="Controls">
+        <b-modal id="controls" ref="controls" size="lg" hide-footer centered title="Controls">
             <l-c-controls></l-c-controls>
+            <b-btn class="mt-3" variant="primary" block @click="hideControls">Close</b-btn>
         </b-modal>
     </div>
 </template>
 
 <script>
   import { mapGetters } from 'vuex'
+  import defaultText from '@/assets/text/default.txt'
   import LCControls from '@/components/Controls'
   import LCFooter from '@/components/Footer'
 
@@ -49,7 +51,7 @@
     name: 'App',
     data () {
       return {
-        source: '',
+        source: defaultText,
         debug: false,
       }
     },
@@ -297,6 +299,9 @@
         }
 
         return text.trim()
+      },
+      hideControls () {
+        this.$refs.controls.hide()
       },
     },
     components: {
