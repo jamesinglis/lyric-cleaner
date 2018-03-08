@@ -167,9 +167,9 @@
         return text.replace(regex, (match, p1, offset, string) => p1.toUpperCase())
       },
       capitalizeFirstInLineAction (text) {
-        let regexString = '^(.)'
+        let regexString = '^([\'"\u2018\u2019\u201C\u201D]?)([A-Za-z])' // respects leading single and double quotes
         let regex = new RegExp(regexString, 'gim')
-        return text.replace(regex, (match, p1, offset, string) => this.toTitleCase(p1))
+        return text.replace(regex, (match, p1, p2, offset, string) => p1 + this.toTitleCase(p2))
       },
       straightenQuotesAction (text) {
         return text.replace(/[\u2018\u2019]/g, '\'').replace(/[\u201C\u201D]/g, '"')
