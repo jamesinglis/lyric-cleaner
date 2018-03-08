@@ -76,8 +76,14 @@
         if (this.removeHyphens) {
           source = this.removeHyphensAction(source)
         }
+        if (this.removeParentheses) {
+          source = this.removeParenthesesAction(source)
+        }
         if (this.removeTerminalPunctuation) {
           source = this.removeTerminalPunctuationAction(source)
+        }
+        if (this.removeMultipliers) {
+          source = this.removeMultipliersAction(source)
         }
         if (this.lowerCaseLine) {
           source = this.lowerCaseLineAction(source)
@@ -103,7 +109,9 @@
         'condenseMultipleSpaces',
         'straightenQuotes',
         'removeHyphens',
+        'removeParentheses',
         'removeTerminalPunctuation',
+        'removeMultipliers',
         'lowerCaseLine',
         'capitalizeFirstInLine',
         'capitalizeNames',
@@ -150,6 +158,11 @@
       straightenQuotesAction (text) {
         return text.replace(/[\u2018\u2019]/g, '\'').replace(/[\u201C\u201D]/g, '"')
       },
+      removeParenthesesAction (text) {
+        let regexString = ' *\\(.*?\\) *'
+        let regex = new RegExp(regexString, 'gim')
+        return text.replace(regex, '')
+      },
       removeHyphensAction (text) {
         let regexString = ' *\\- *'
         let regex = new RegExp(regexString, 'gim')
@@ -157,6 +170,11 @@
       },
       removeTerminalPunctuationAction (text) {
         let regexString = '[,.;]+$'
+        let regex = new RegExp(regexString, 'gim')
+        return text.replace(regex, '')
+      },
+      removeMultipliersAction (text) {
+        let regexString = ' ?x\\d'
         let regex = new RegExp(regexString, 'gim')
         return text.replace(regex, '')
       },

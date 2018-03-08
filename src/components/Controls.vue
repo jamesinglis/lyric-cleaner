@@ -43,10 +43,30 @@
             </b-col>
         </b-row>
         <b-row>
+            <b-col cols="5">Remove Hyphenated Words</b-col>
+            <b-col cols="1">
+                <b-form-checkbox id="removeHyphens"
+                                 v-model="removeHyphens"
+                                 @change="pushControlFormToState"></b-form-checkbox>
+            </b-col>
+            <b-col cols="5">Remove Text in Parenthesese</b-col>
+            <b-col cols="1">
+                <b-form-checkbox id="removeParentheses"
+                                 v-model="removeParentheses"
+                                 @change="pushControlFormToState"></b-form-checkbox>
+            </b-col>
+        </b-row>
+        <b-row>
             <b-col cols="5">Remove Trailing Punctuation</b-col>
             <b-col cols="1">
                 <b-form-checkbox id="removeTerminalPunctuation"
                                  v-model="removeTerminalPunctuation"
+                                 @change="pushControlFormToState"></b-form-checkbox>
+            </b-col>
+            <b-col cols="5">Remove Multipliers</b-col>
+            <b-col cols="1">
+                <b-form-checkbox id="removeMultipliers"
+                                 v-model="removeMultipliers"
                                  @change="pushControlFormToState"></b-form-checkbox>
             </b-col>
         </b-row>
@@ -96,7 +116,9 @@
         condenseMultipleSpaces: this.$store.state.uicontrol.condenseMultipleSpaces,
         straightenQuotes: this.$store.state.uicontrol.straightenQuotes,
         removeHyphens: this.$store.state.uicontrol.removeHyphens,
+        removeParentheses: this.$store.state.uicontrol.removeParentheses,
         removeTerminalPunctuation: this.$store.state.uicontrol.removeTerminalPunctuation,
+        removeMultipliers: this.$store.state.uicontrol.removeMultipliers,
         lowerCaseLine: this.$store.state.uicontrol.lowerCaseLine,
         capitalizeFirstInLine: this.$store.state.uicontrol.capitalizeFirstInLine,
         capitalizeNames: this.$store.state.uicontrol.capitalizeNames,
@@ -114,7 +136,9 @@
           condenseMultipleSpaces: this.condenseMultipleSpaces,
           straightenQuotes: this.straightenQuotes,
           removeHyphens: this.removeHyphens,
+          removeParentheses: this.removeParentheses,
           removeTerminalPunctuation: this.removeTerminalPunctuation,
+          removeMultipliers: this.removeMultipliers,
           lowerCaseLine: this.lowerCaseLine,
           capitalizeFirstInLine: this.capitalizeFirstInLine,
           capitalizeNames: this.capitalizeNames,
