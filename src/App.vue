@@ -215,13 +215,35 @@
       capitalizeNamesAction (text) {
         // let words = ['Du', 'Ditt', 'Din', 'Deg', 'Han', 'Ham', 'Herre', 'Gud', 'Jesus', 'Ånd']
         let words = this.$store.state.uicontrol.capitalizeNamesValues
-        let regexString = '(^|[ ,.;!?])(' + words.join('|') + ')([ ,.;!?]|$)'
-        // console.log(regexString)
+        let regexString = '(^|[ ,.;!?\'"\u2018\u2019\u201C\u201D])(' + words.join('|') +
+          ')([ ,.;!?\'"\u2018\u2019\u201C\u201D]|$)'
         let regex = new RegExp(regexString, 'gim')
         return text.replace(regex, (match, p1, p2, p3, offset, string) => p1 + this.toTitleCase(p2) + p3)
       },
       toTitleCase (text) {
         return text.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+      },
+      reflowSectionsAction (text, reflowSectionsNumOfLines) {
+        let outputText = ''
+        let lines = text.trim().split('\n')
+        let index
+        let divisor = 1
+
+        while (divisor < 10) {
+          if (Math.ceil(lines.length / divisor) <= reflowSectionsNumOfLines) {
+            for (index in lines) {
+              outputText += lines[index] + '\n'
+              if (index % Math.ceil(lines.length / divisor) === (reflowSectionsNumOfLines - 1)) {
+                outputText += '\n'
+              }
+            }
+            break
+          } else {
+            divisor++
+          }
+        }
+
+        return outputText.trim()
       },
       textToArray (text) {
         let blockArray = text.split('\n\n')
@@ -285,16 +307,21 @@
       },
       arrayToText (array) {
         let text = ''
+        let reflowSectionsNumOfLines = parseInt(this.$store.state.uicontrol.reflowSectionsNumOfLines)
         for (var block of array) {
           if (block.label !== '') {
             text += block.label + '\n'
           }
           if (typeof block.lines !== 'undefined') {
-            let blockText = block.lines.join('\n') + '\n\n'
+            let blockText = block.lines.join('\n')
             if (this.$store.state.uicontrol.capitalizeAll) {
               blockText = this.upperCaseLineAction(blockText)
             }
-            text += blockText
+
+            if (this.$store.state.uicontrol.reflowSections && reflowSectionsNumOfLines > 0) {
+              blockText = this.reflowSectionsAction(blockText, reflowSectionsNumOfLines)
+            }
+            text += blockText + '\n\n'
           }
         }
 

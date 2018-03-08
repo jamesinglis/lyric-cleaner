@@ -60,6 +60,8 @@ export const state = {
   capitalizeNamesValuesString: '',
   suppressDuplicateSections: true,
   capitalizeAll: false,
+  reflowSections: false,
+  reflowSectionsNumOfLines: 2,
 }
 
 // getters
@@ -84,6 +86,8 @@ export const getters = {
   capitalizeNamesValuesString: state => state.capitalizeNamesValuesString,
   suppressDuplicateSections: state => state.capitalizeAll,
   capitalizeAll: state => state.capitalizeAll,
+  reflowSections: state => state.reflowSections,
+  reflowSectionsNumOfLines: state => state.reflowSectionsNumOfLines,
 }
 
 // mutations

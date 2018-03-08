@@ -109,11 +109,27 @@
                 <b-form-select :value="capitalizeNamesPresetDefault"
                                :options="capitalizeNamesPresetOptions"
                                @change="selectCapitalizeNamesPreset"
+                               v-show="capitalizeNames"
                 ></b-form-select>
                 <b-form-textarea id="capitalizeNamesValuesString" v-model="capitalizeNamesValuesString"
                                  @change.native="pushNamesValuesToState"
                                  :rows="3" :max-rows="6"
+                                 v-show="capitalizeNames"
                 ></b-form-textarea>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col cols="5">Reflow Sections</b-col>
+            <b-col cols="1">
+                <b-form-checkbox id="reflowSections"
+                                 v-model="reflowSections"
+                                 @change="pushControlFormToState"></b-form-checkbox>
+            </b-col>
+            <b-col cols="6">
+                <b-form-input id="reflowSectionsNumOfLines" v-model="reflowSectionsNumOfLines"
+                              @change="pushControlFormToState"
+                              v-show="reflowSections"
+                ></b-form-input>
             </b-col>
         </b-row>
     </b-container>
@@ -147,6 +163,8 @@
         capitalizeNamesValuesString: stateValues.capitalizeNamesValuesString,
         suppressDuplicateSections: stateValues.suppressDuplicateSections,
         capitalizeAll: stateValues.capitalizeAll,
+        reflowSections: stateValues.reflowSections,
+        reflowSectionsNumOfLines: stateValues.reflowSectionsNumOfLines,
       }
     },
     computed: {
@@ -178,6 +196,8 @@
           capitalizeNamesValuesString: this.capitalizeNamesValuesString,
           suppressDuplicateSections: this.suppressDuplicateSections,
           capitalizeAll: this.capitalizeAll,
+          reflowSections: this.reflowSections,
+          reflowSectionsNumOfLines: this.reflowSectionsNumOfLines,
         }
       },
     },
