@@ -106,8 +106,14 @@
                                  @change="pushControlFormToState"></b-form-checkbox>
             </b-col>
             <b-col cols="6">
-                <b-form-input :value="capitalizeNamesValuesString"
-                              @change="pushNamesValuesToState"></b-form-input>
+                <b-form-select :value="capitalizeNamesPresetSelection"
+                               :options="capitalizeNamesPresetOptions"
+                               @change="selectCapitalizeNamesPreset"
+                ></b-form-select>
+                <b-form-textarea id="capitalizeNamesValuesString" v-model="capitalizeNamesValuesString"
+                                 @change.native="pushNamesValuesToState"
+                                 :rows="3" :max-rows="6"
+                ></b-form-textarea>
             </b-col>
         </b-row>
     </b-container>
@@ -120,27 +126,38 @@
   export default {
     name: 'lc-controls',
     data () {
+      let stateValues = Object.assign({}, this.$store.state.uicontrol)
       return {
-        stripChords: this.$store.state.uicontrol.stripChords,
-        mergeUnlabeledSections: this.$store.state.uicontrol.mergeUnlabeledSections,
-        labelUnlabeledSections: this.$store.state.uicontrol.labelUnlabeledSections,
-        trimLines: this.$store.state.uicontrol.trimLines,
-        condenseMultipleSpaces: this.$store.state.uicontrol.condenseMultipleSpaces,
-        straightenQuotes: this.$store.state.uicontrol.straightenQuotes,
-        removeHyphens: this.$store.state.uicontrol.removeHyphens,
-        removeParentheses: this.$store.state.uicontrol.removeParentheses,
-        removeTerminalPunctuation: this.$store.state.uicontrol.removeTerminalPunctuation,
-        removeMultipliers: this.$store.state.uicontrol.removeMultipliers,
-        lowerCaseLine: this.$store.state.uicontrol.lowerCaseLine,
-        capitalizeFirstInLine: this.$store.state.uicontrol.capitalizeFirstInLine,
-        capitalizeNames: this.$store.state.uicontrol.capitalizeNames,
-        capitalizeNamesValues: this.$store.state.uicontrol.capitalizeNamesValues,
-        capitalizeNamesValuesString: this.$store.state.uicontrol.capitalizeNamesValues.join(','),
-        suppressDuplicateSections: this.$store.state.uicontrol.suppressDuplicateSections,
-        capitalizeAll: this.$store.state.uicontrol.capitalizeAll,
+        stripChords: stateValues.stripChords,
+        mergeUnlabeledSections: stateValues.mergeUnlabeledSections,
+        labelUnlabeledSections: stateValues.labelUnlabeledSections,
+        trimLines: stateValues.trimLines,
+        condenseMultipleSpaces: stateValues.condenseMultipleSpaces,
+        straightenQuotes: stateValues.straightenQuotes,
+        removeHyphens: stateValues.removeHyphens,
+        removeParentheses: stateValues.removeParentheses,
+        removeTerminalPunctuation: stateValues.removeTerminalPunctuation,
+        removeMultipliers: stateValues.removeMultipliers,
+        lowerCaseLine: stateValues.lowerCaseLine,
+        capitalizeFirstInLine: stateValues.capitalizeFirstInLine,
+        capitalizeNames: stateValues.capitalizeNames,
+        capitalizeNamesPresets: stateValues.capitalizeNamesPresets,
+        capitalizeNamesPresetDefault: stateValues.capitalizeNamesPresetDefault,
+        capitalizeNamesPresetSelection: stateValues.capitalizeNamesPresetDefault,
+        capitalizeNamesValues: stateValues.capitalizeNamesValues,
+        capitalizeNamesValuesString: stateValues.capitalizeNamesValuesString,
+        suppressDuplicateSections: stateValues.suppressDuplicateSections,
+        capitalizeAll: stateValues.capitalizeAll,
       }
     },
     computed: {
+      capitalizeNamesPresetOptions () {
+        let presetOptions = []
+        for (let preset in this.capitalizeNamesPresets) {
+          presetOptions.push({value: preset, text: this.capitalizeNamesPresets[preset]['label']})
+        }
+        return presetOptions
+      },
       controlForm () {
         return {
           stripChords: this.stripChords,
@@ -156,24 +173,41 @@
           lowerCaseLine: this.lowerCaseLine,
           capitalizeFirstInLine: this.capitalizeFirstInLine,
           capitalizeNames: this.capitalizeNames,
+          capitalizeNamesPresets: this.capitalizeNamesPresets,
+          capitalizeNamesPresetDefault: this.capitalizeNamesPresetDefault,
           capitalizeNamesValues: this.capitalizeNamesValues,
+          capitalizeNamesValuesString: this.capitalizeNamesValuesString,
           suppressDuplicateSections: this.suppressDuplicateSections,
           capitalizeAll: this.capitalizeAll,
         }
       },
     },
     methods: {
-      pushControlFormToState ($event) {
+      selectCapitalizeNamesPreset (value) {
+        this.capitalizeNamesValuesString = this.capitalizeNamesPresets[value]['options'].join(',')
+        this.capitalizeNamesValues = this.capitalizeNamesPresets[value]['options']
+        this.$store.dispatch('uicontrol/pushControlsToStore', this.controlForm)
+      },
+      pushControlFormToState (value) {
         let context = this
         Vue.nextTick(function () {
           context.$store.dispatch('uicontrol/pushControlsToStore', context.controlForm)
         })
       },
-      pushNamesValuesToState (value) {
+      pushNamesValuesToState ($event) {
+        let value = $event.target.value
         this.capitalizeNamesValuesString = value.replace(/[.;]/g, ',')
         this.capitalizeNamesValues = this.capitalizeNamesValuesString.split(',')
         this.$store.dispatch('uicontrol/pushControlsToStore', this.controlForm)
       },
+    },
+    mounted () {
+      if (this.capitalizeNamesPresetSelection !== null) {
+        this.capitalizeNamesValuesString = this.capitalizeNamesPresets[this.capitalizeNamesPresetSelection]['options'].join(
+          ',')
+        this.capitalizeNamesValues = this.capitalizeNamesPresets[this.capitalizeNamesPresetSelection]['options']
+        this.$store.dispatch('uicontrol/pushControlsToStore', this.controlForm)
+      }
     },
   }
 </script>
