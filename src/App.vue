@@ -196,9 +196,9 @@
       },
       stripChordProAction (text) {
         let chordMatch = '[A-G](#|b|m|maj|sus)*\\d?(\\/[A-G](#|b)*)?'
-        let regexString = '(^|[ \\t])(' + chordMatch + ')([ \\t]|$)'
+        let regexString = '^((' + chordMatch + ')| )+$'
         let regex = new RegExp(regexString, 'gm')
-        text = text.replace(regex, '')
+        text = text.replace(regex, ' %% ')
 
         regexString = '\\[' + chordMatch + '\\]'
         regex = new RegExp(regexString, 'gm')
@@ -206,14 +206,13 @@
 
         regexString = '^( |%%)+$\\n'
         regex = new RegExp(regexString, 'gm')
-        text = text.replace(regex, '%%')
+        text = text.replace(regex, '%% ')
 
         regexString = '%% ?'
         regex = new RegExp(regexString, 'gm')
         return text.replace(regex, '')
       },
       capitalizeNamesAction (text) {
-        // let words = ['Du', 'Ditt', 'Din', 'Deg', 'Han', 'Ham', 'Herre', 'Gud', 'Jesus', 'Ånd']
         let words = this.$store.state.uicontrol.capitalizeNamesValues
         let regexString = '(^|[ ,.;!?\'"\u2018\u2019\u201C\u201D])(' + words.join('|') +
           ')([ ,.;!?\'"\u2018\u2019\u201C\u201D]|$)'
@@ -229,7 +228,7 @@
         let index
         let divisor = 1
 
-        while (divisor < 10) {
+        while (divisor < 250) {
           if (Math.ceil(lines.length / divisor) <= reflowSectionsNumOfLines) {
             for (index in lines) {
               outputText += lines[index] + '\n'
