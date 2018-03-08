@@ -3,11 +3,19 @@
 import Vue from 'vue'
 import 'babel-polyfill'
 import BootstrapVue from 'bootstrap-vue'
+import VueAnalytics from 'vue-analytics'
 import App from '@/App'
 
 import store from './store'
 
 Vue.use(BootstrapVue)
+Vue.use(VueAnalytics, {
+  id: 'UA-115384966-1',
+  checkDuplicatedScript: true,
+  debug: {
+    sendHitTask: process.env.NODE_ENV === 'production',
+  },
+})
 
 Vue.config.productionTip = false
 

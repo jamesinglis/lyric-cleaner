@@ -303,6 +303,9 @@
       LCControls,
       LCFooter,
     },
+    created () {
+      this.$ga.page('/')
+    },
   }
 </script>
 
