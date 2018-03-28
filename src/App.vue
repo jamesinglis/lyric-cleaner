@@ -59,12 +59,12 @@
       output () {
         let source = this.source
 
+        if (this.condenseMultipleSpaces) {
+          source = this.condenseMultipleSpacesAction(source)
+        }
         // Run this the first time
         if (this.trimLines) {
           source = this.trimLinesAction(source)
-        }
-        if (this.condenseMultipleSpaces) {
-          source = this.condenseMultipleSpacesAction(source)
         }
 
         // Run removal filters first
@@ -137,7 +137,7 @@
     },
     methods: {
       trimLinesAction (text) {
-        let regexString = '^[ \t]*(.+?)[ \t]*$'
+        let regexString = '^[ \t]*(.*?)[ \t]*$'
         let regex = new RegExp(regexString, 'gim')
         return text.replace(regex, '$1')
       },
