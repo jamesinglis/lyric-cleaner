@@ -270,7 +270,10 @@
           outputArray.push(blockObject)
         }
 
-        // console.log(outputArray)
+        if (this.debug) {
+          console.log('textToArray Loop 1')
+          console.log(outputArray)
+        }
 
         blockArray = outputArray.slice(0)
         outputArray = []
@@ -293,6 +296,11 @@
           outputArray = []
         }
 
+        if (this.debug) {
+          console.log('textToArray Loop 2')
+          console.log(outputArray)
+        }
+
         // This loop checks there are no duplicate sections
         if (blockArray.length > 0 && this.$store.state.uicontrol.suppressDuplicateSections) {
           for (i = 0; i < blockArray.length; i++) {
@@ -301,6 +309,11 @@
             }
             outputArrayTemp.push(JSON.stringify(blockArray[i]))
           }
+        }
+
+        if (this.debug) {
+          console.log('textToArray Loop 3')
+          console.log(outputArray)
         }
 
         return outputArray
