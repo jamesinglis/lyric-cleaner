@@ -129,6 +129,7 @@
         'removeTerminalPunctuation',
         'removeMultipliers',
         'lowerCaseLine',
+        'songSectionsRegex',
         'capitalizeFirstInLine',
         'capitalizeNames',
         'capitalizeNamesValues',
@@ -151,8 +152,8 @@
         return text.replace(regex, '\n\n')
       },
       checkForSectionHeadings (text) {
-        let songSections = ['Verse ?\\d?', 'Chorus ?\\d?', 'Bridge ?\\d?', 'Pre-Chorus ?\\d?', 'Tag ?\\d?']
-        let regexString = '^(' + songSections.join('|') + ')$'
+        // let songSections = ['Verse ?\\d?', 'Chorus ?\\d?', 'Bridge ?\\d?', 'Pre\\-?Chorus ?\\d?', 'Tag ?\\d?']
+        let regexString = '^(' + this.songSectionsRegex.join('|') + ')$'
         let regex = new RegExp(regexString, 'gim')
         return regex.test(text)
       },
@@ -248,8 +249,8 @@
         let blockArray = text.split('\n\n')
         let outputArray = []
         let outputArrayTemp = []
-        let songSections = ['Verse ?\\d?', 'Chorus ?\\d?', 'Bridge ?\\d?', 'Pre-Chorus ?\\d?', 'Tag ?\\d?']
-        let regexString = '^(' + songSections.join('|') + ')$'
+        // let songSections = ['Verse ?\\d?', 'Chorus ?\\d?', 'Bridge ?\\d?', 'Pre-Chorus ?\\d?', 'Tag ?\\d?']
+        let regexString = '^(' + this.songSectionsRegex.join('|') + ')$'
         let regex = new RegExp(regexString, 'i')
         let i = 0
         let counter = 1

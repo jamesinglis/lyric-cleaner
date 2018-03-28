@@ -14,6 +14,7 @@ export const state = {
   condenseMultipleSpaces: true,
   straightenQuotes: true,
   lowerCaseLine: true,
+  songSections: ['Verse', 'Chorus', 'Bridge', 'Pre-Chorus', 'Prechorus', 'Tag'],
   capitalizeFirstInLine: true,
   capitalizeNames: true,
   capitalizeNamesPresets: {
@@ -78,6 +79,8 @@ export const getters = {
   condenseMultipleSpaces: state => state.condenseMultipleSpaces,
   straightenQuotes: state => state.straightenQuotes,
   lowerCaseLine: state => state.lowerCaseLine,
+  songSections: state => state.songSections,
+  songSectionsRegex: state => state.songSections.map(element => `${element} ?\\d?`.replace('-', '\\-')),
   capitalizeFirstInLine: state => state.capitalizeFirstInLine,
   capitalizeNames: state => state.capitalizeNames,
   capitalizeNamesPresets: state => state.capitalizeNamesPresets,
