@@ -261,7 +261,7 @@
           let blockObject = {label: '', lines: []}
 
           if (regex.test(blockSplit[0])) {
-            blockObject.label = blockSplit.shift()
+            blockObject.label = this.toTitleCase(blockSplit.shift())
           } else if (this.$store.state.uicontrol.labelUnlabeledSections) {
             blockObject.label = 'Verse ' + counter++
           }
