@@ -132,6 +132,15 @@
                 ></b-form-input>
             </b-col>
         </b-row>
+        <b-row>
+            <b-col cols="6">Song Section Names</b-col>
+            <b-col cols="6">
+                <b-form-textarea id="songSectionsString" v-model="songSectionsString"
+                                 @change.native="pushSongSectionsToState"
+                                 :rows="2" :max-rows="6"
+                ></b-form-textarea>
+            </b-col>
+        </b-row>
     </b-container>
 </template>
 
@@ -155,6 +164,8 @@
         removeTerminalPunctuation: stateValues.removeTerminalPunctuation,
         removeMultipliers: stateValues.removeMultipliers,
         lowerCaseLine: stateValues.lowerCaseLine,
+        songSections: stateValues.songSections,
+        songSectionsString: stateValues.songSectionsString,
         capitalizeFirstInLine: stateValues.capitalizeFirstInLine,
         capitalizeNames: stateValues.capitalizeNames,
         capitalizeNamesPresets: stateValues.capitalizeNamesPresets,
@@ -188,6 +199,8 @@
           removeTerminalPunctuation: this.removeTerminalPunctuation,
           removeMultipliers: this.removeMultipliers,
           lowerCaseLine: this.lowerCaseLine,
+          songSections: this.songSections,
+          songSectionsString: this.songSectionsString,
           capitalizeFirstInLine: this.capitalizeFirstInLine,
           capitalizeNames: this.capitalizeNames,
           capitalizeNamesPresets: this.capitalizeNamesPresets,
@@ -216,16 +229,23 @@
       },
       pushNamesValuesToState ($event) {
         let value = $event.target.value
-        this.capitalizeNamesValuesString = value.replace(/[.;]/g, ',')
-        this.capitalizeNamesValues = this.capitalizeNamesValuesString.split(',')
+        this.capitalizeNamesValuesString = value.replace(/[.;]/g, ',').replace(/ *, */g, ', ')
+        this.capitalizeNamesValues = this.capitalizeNamesValuesString.replace(/ *, */g, ',').split(',')
+        this.$store.dispatch('uicontrol/pushControlsToStore', this.controlForm)
+      },
+      pushSongSectionsToState ($event) {
+        let value = $event.target.value
+        this.songSectionsString = value.replace(/[.;]/g, ',').replace(/ *, */g, ', ')
+        this.songSections = this.songSectionsString.replace(/ *, */g, ',').split(',')
         this.$store.dispatch('uicontrol/pushControlsToStore', this.controlForm)
       },
     },
     mounted () {
       if (this.capitalizeNamesPresetDefault !== null) {
         this.capitalizeNamesValuesString = this.capitalizeNamesPresets[this.capitalizeNamesPresetDefault]['options'].join(
-          ',')
+          ', ')
         this.capitalizeNamesValues = this.capitalizeNamesPresets[this.capitalizeNamesPresetDefault]['options']
+        this.songSectionsString = this.songSections.join(', ')
         this.$store.dispatch('uicontrol/pushControlsToStore', this.controlForm)
       }
     },
