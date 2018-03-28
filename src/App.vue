@@ -223,6 +223,9 @@
       toTitleCase (text) {
         return text.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
       },
+      forceTitleCase (text) {
+        return this.toTitleCase(text.toLowerCase())
+      },
       reflowSectionsAction (text, reflowSectionsNumOfLines) {
         let outputText = ''
         let lines = text.trim().split('\n')
@@ -261,7 +264,7 @@
           let blockObject = {label: '', lines: []}
 
           if (regex.test(blockSplit[0])) {
-            blockObject.label = this.toTitleCase(blockSplit.shift())
+            blockObject.label = this.forceTitleCase(blockSplit.shift())
           } else if (this.$store.state.uicontrol.labelUnlabeledSections) {
             blockObject.label = 'Verse ' + counter++
           }
