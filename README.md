@@ -4,7 +4,13 @@
 
 Lyric Cleaner is an in-browser solution for cleaning up lyrics from various sources, written with worship projection software in mind.
 
-Lyric Cleaner is hosted at [https://lyric-cleaner.herokuapp.com].
+Lyric Cleaner is available online, hosted on [Heroku](https://lyric-cleaner.herokuapp.com) and also sometimes my [own domain](http://lyric-cleaner.jamesinglis.no/).
+
+Created by James Inglis in March 2018.
+
+## Features
+
+To be added
 
 ## Build Setup
 
