@@ -63,7 +63,6 @@
     computed: {
       title () {
         let text = this.sourceProcess(this.source)
-        // console.log(this.extractSongTitle(text))
         return this.extractSongTitle(text)
       },
       output () {
@@ -153,7 +152,7 @@
       trimLinesAction (text) {
         let regexString = '^[ \t]*(.*?)[ \t]*$'
         let regex = new RegExp(regexString, 'gim')
-        return text.replace(regex, '$1')
+        return text.replace(regex, '$1').trim()
       },
       condenseMultipleSpacesAction (text) {
         let regexString = '[ \t]{1,}'
