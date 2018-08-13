@@ -16,12 +16,17 @@
         <b-container class="bv-row">
             <b-row>
                 <b-col>
-                    <label>Source</label>
+                    <label>Source: </label>
                     <textarea v-model="source" rows="24"></textarea>
                 </b-col>
                 <b-col>
-                    <label>Output</label>
+                    <label>Output: {{ title }}</label>
                     <textarea :value="outputDisplay" rows="24" readonly></textarea>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <b-button @click="downloadFile">Download File</b-button>
                 </b-col>
             </b-row>
             <b-row v-if="debug">
@@ -56,7 +61,40 @@
       }
     },
     computed: {
+      title () {
+        let text = this.sourceProcess(this.source)
+        // console.log(this.extractSongTitle(text))
+        return this.extractSongTitle(text)
+      },
       output () {
+        let text = this.sourceProcess(this.source)
+        text = this.removeSongTitle(text)
+        return this.textToArray(text)
+      },
+      outputDisplay () {
+        return this.arrayToText(this.output)
+      },
+      outputDebug () {
+        return JSON.stringify(this.output)
+      },
+      ...mapGetters('uicontrol', [
+        'stripChords',
+        'trimLines',
+        'condenseMultipleSpaces',
+        'straightenQuotes',
+        'removeHyphens',
+        'removeParentheses',
+        'removeTerminalPunctuation',
+        'removeMultipliers',
+        'lowerCaseLine',
+        'songSectionsRegex',
+        'capitalizeFirstInLine',
+        'capitalizeNames',
+        'capitalizeNamesValues',
+      ]),
+    },
+    methods: {
+      sourceProcess () {
         let source = this.source
 
         if (this.condenseMultipleSpaces) {
@@ -110,32 +148,8 @@
           source = this.capitalizeNamesAction(source)
         }
 
-        let array = this.textToArray(source)
-        return array
+        return source
       },
-      outputDisplay () {
-        return this.arrayToText(this.output)
-      },
-      outputDebug () {
-        return JSON.stringify(this.output)
-      },
-      ...mapGetters('uicontrol', [
-        'stripChords',
-        'trimLines',
-        'condenseMultipleSpaces',
-        'straightenQuotes',
-        'removeHyphens',
-        'removeParentheses',
-        'removeTerminalPunctuation',
-        'removeMultipliers',
-        'lowerCaseLine',
-        'songSectionsRegex',
-        'capitalizeFirstInLine',
-        'capitalizeNames',
-        'capitalizeNamesValues',
-      ]),
-    },
-    methods: {
       trimLinesAction (text) {
         let regexString = '^[ \t]*(.*?)[ \t]*$'
         let regex = new RegExp(regexString, 'gim')
@@ -212,6 +226,30 @@
         regexString = '%% ?'
         regex = new RegExp(regexString, 'gm')
         return text.replace(regex, '')
+      },
+      extractSongTitle (text) {
+        let firstLine = text.split('\n')[0]
+        let regexString = '^(Title: )?(.*)$'
+        let regex = new RegExp(regexString, 'gm')
+
+        if (this.checkForSectionHeadings(firstLine) === false && firstLine.trim().length > 0) {
+          return firstLine.replace(regex, '$2')
+        }
+        return 'Title Unknown'
+      },
+      removeSongTitle (text) {
+        let lines = text.split('\n')
+        let firstLine = lines[0]
+        let remainingLines = text.split('\n').splice(1)
+        let regexString = '^(Title: )?(.*)$'
+        let regex = new RegExp(regexString, 'gm')
+
+        if (this.checkForSectionHeadings(firstLine) === false &&
+          firstLine.trim().length > 0 &&
+          lines[1].trim().length === 0) {
+          firstLine = firstLine.replace(regex, '')
+        }
+        return [firstLine].concat(remainingLines).join('\n')
       },
       capitalizeNamesAction (text) {
         let words = this.$store.state.uicontrol.capitalizeNamesValues
@@ -345,6 +383,15 @@
       },
       hideControls () {
         this.$refs.controls.hide()
+      },
+      downloadFile () {
+        let element = document.createElement('a')
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(this.outputDisplay))
+        element.setAttribute('download', this.title + '.txt')
+        element.style.display = 'none'
+        document.body.appendChild(element)
+        element.click()
+        document.body.removeChild(element)
       },
     },
     components: {
